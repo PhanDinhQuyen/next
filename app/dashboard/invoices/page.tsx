@@ -5,17 +5,21 @@ import { CreateInvoice } from "@/app/ui/invoices/buttons";
 import { lusitana } from "@/app/ui/fonts";
 import { Suspense } from "react";
 import { InvoicesTableSkeleton } from "@/app/ui/skeletons";
+import { fetchInvoicesPages } from "@/app/lib/data";
 
 export default async function Page({
   searchParams,
+  slug,
 }: {
   searchParams?: {
     query?: string;
     page?: string;
   };
+  slug?: string; // The invoice slug to fetch the invoice details. Only present when viewing a specific invoice.  // This prop is optional and will be `undefined` when viewing a list of invoices.  // When viewing a specific invoice, the `slug` will be provided.  // This is used to fetch the invoice details, such as the invoice details, invoice items, and invoice notes.  // The `slug` is part of the invoice URL and is used to uniquely
 }) {
   const query = searchParams?.query || "";
   const currentPage = Number(searchParams?.page) || 1;
+  const totalPages = await fetchInvoicesPages(query);
 
   return (
     <div className='w-full'>
@@ -30,7 +34,7 @@ export default async function Page({
         <Table query={query} currentPage={currentPage} />
       </Suspense>
       <div className='mt-5 flex w-full justify-center'>
-        {/* <Pagination totalPages={totalPages} /> */}
+        <Pagination totalPages={totalPages} />
       </div>
     </div>
   );
